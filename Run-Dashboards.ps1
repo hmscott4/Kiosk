@@ -123,7 +123,7 @@ for($i=1; $i -lt $maxMinutes; $i++)
     {
         [datetime]$rebootNow = [datetime]::ParseExact($rebootTime, 'HH:mm',$null)
         [datetime]$currentTime = Get-Date
-        If($currentTime -gt $rebootNow -and $currentTime -lt $rebootNow.AddMinutes(5))
+        If(($currentTime -gt $rebootNow) -and ($currentTime -lt $rebootNow.AddMinutes(5)))
         {
             Restart-Computer
         }
