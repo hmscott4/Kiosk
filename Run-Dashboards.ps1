@@ -78,10 +78,11 @@ foreach($url in $thisConfig.config.urls.url)
 {
     $navTo = $navTo + [uri]::EscapeUriString($url) + " "
 }
-$intervalSeconds = $thisConfig.config.rotation.intervalSeconds;
-$refreshMinutes = $thisConfig.config.rotation.refreshMinutes;
-$maxMinutes = $thisConfig.config.rotation.maxMinutes
-$rebootTime=$thisConfig.config.reboot.day + " " + $thisConfig.config.reboot.time
+[int]$intervalSeconds = $thisConfig.config.rotation.intervalSeconds;
+[int]$refreshMinutes = $thisConfig.config.rotation.refreshMinutes;
+[int]$maxMinutes = $thisConfig.config.rotation.maxMinutes
+[string]$rebootDay=$thisConfig.config.reboot.day
+[string]$rebootTime=$thisConfig.config.reboot.time
 $rebootEnabled=$thisConfig.config.reboot.enabled
 
 ################################################################################
@@ -117,9 +118,14 @@ for($i=1; $i -lt $maxMinutes; $i++)
     ### Bear in mind that if you increase intervalSeconds, 
     ### you could "skip over" the time specified
     ### Disable reboot by setting <enabled> to 0
-    $dateString = (Get-Date).ToString("ddd HH:mm")
-    If (($dateString -eq $rebootTime) -and ($rebootEnabled -eq 1))
+    $dayString = (Get-Date).ToString("ddd")
+    If (($dayString -eq $rebootDay) -and ($rebootEnabled -eq 1))
     {
-        Restart-Computer
+        [datetime]$rebootNow = [datetime]::ParseExact($rebootTime, 'HH:mm',$null)
+        [datetime]$currentTime = Get-Date
+        If(($currentTime -gt $rebootNow) -and ($currentTime -lt $rebootNow.AddMinutes(5)))
+        {
+            Restart-Computer
+        }
     }
 } 
